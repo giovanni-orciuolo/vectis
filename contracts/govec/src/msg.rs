@@ -1,24 +1,15 @@
 use cosmwasm_std::{Binary, StdError, StdResult, Uint128};
-use cw20::{Cw20Coin, Logo, MinterResponse};
+use cw20::{Cw20Coin, MinterResponse};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize, JsonSchema, Debug, Clone, PartialEq)]
-pub struct InstantiateMarketingInfo {
-    pub project: Option<String>,
-    pub description: Option<String>,
-    pub marketing: Option<String>,
-    pub logo: Option<Logo>,
-}
 
 #[derive(Serialize, Deserialize, JsonSchema, Debug, Clone, PartialEq)]
 pub struct InstantiateMsg {
     pub name: String,
     pub symbol: String,
-    pub decimals: u8,
     pub initial_balances: Vec<Cw20Coin>,
+    pub staking: Option<String>,
     pub mint: Option<MinterResponse>,
-    pub marketing: Option<InstantiateMarketingInfo>,
 }
 
 impl InstantiateMsg {
@@ -37,9 +28,6 @@ impl InstantiateMsg {
             return Err(StdError::generic_err(
                 "Ticker symbol is not in expected format [a-zA-Z\\-]{3,12}",
             ));
-        }
-        if self.decimals > 18 {
-            return Err(StdError::generic_err("Decimals must not exceed 18"));
         }
         Ok(())
     }
@@ -72,6 +60,7 @@ pub enum ExecuteMsg {
     /// Transfer is a base message to move tokens to another account without triggering actions
     Transfer { recipient: String, amount: Uint128 },
     /// Burn is a base message to destroy tokens forever
+    /// Logic checks that caller only has exactly 1 vote token in their balance
     Burn {},
     /// Send is a base message to transfer tokens to a contract and trigger an action
     /// on the receiving contract.
@@ -80,22 +69,10 @@ pub enum ExecuteMsg {
         amount: Uint128,
         msg: Binary,
     },
-    /// Only with the "mintable" extension. If authorized, creates amount new tokens
-    /// and adds to the recipient balance.
-    Mint { recipient: String, amount: Uint128 },
-    /// Only with the "marketing" extension. If authorized, updates marketing metadata.
-    /// Setting None/null for any of these will leave it unchanged.
-    /// Setting Some("") will clear this field on the contract storage
-    UpdateMarketing {
-        /// A URL pointing to the project behind this token.
-        project: Option<String>,
-        /// A longer description of the token and it's utility. Designed for tooltips or such
-        description: Option<String>,
-        /// The address (if any) who can update this data structure
-        marketing: Option<String>,
-    },
-    /// If set as the "marketing" role on the contract, upload a new URL, SVG, or PNG for the token
-    UploadLogo(Logo),
+    /// If authorized, creates 1 new vote token and adds to the new wallets .
+    Mint { new_wallet: String },
+    /// Updates the staking contract address.Authorized by the DAO
+    UpdateStakingAddr { new_addr: String },
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -103,7 +80,9 @@ pub enum ExecuteMsg {
 pub enum QueryMsg {
     /// Returns the current balance of the given address, 0 if unset.
     /// Return type: BalanceResponse.
-    Balance { address: String },
+    Balance {
+        address: String,
+    },
     /// Returns metadata on the contract - name, decimals, supply, etc.
     /// Return type: TokenInfoResponse.
     TokenInfo {},
@@ -111,6 +90,7 @@ pub enum QueryMsg {
     /// Returns who can mint and the hard cap on maximum tokens after minting.
     /// Return type: MinterResponse.
     Minter {},
+    Staking {},
     /// Only with "enumerable" extension
     /// Returns all accounts that have balances. Supports pagination.
     /// Return type: AllAccountsResponse.
@@ -118,14 +98,4 @@ pub enum QueryMsg {
         start_after: Option<String>,
         limit: Option<u32>,
     },
-    /// Only with "marketing" extension
-    /// Returns more metadata on the contract to display in the client:
-    /// - description, logo, project url, etc.
-    /// Return type: MarketingInfoResponse
-    MarketingInfo {},
-    /// Only with "marketing" extension
-    /// Downloads the mbeded logo data (if stored on chain). Errors if no logo data ftored for this
-    /// contract.
-    /// Return type: DownloadLogoResponse.
-    DownloadLogo {},
 }

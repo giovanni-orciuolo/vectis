@@ -428,7 +428,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "gov-tokens"
+name = "govec"
 version = "0.1.0"
 dependencies = [
  "cosmwasm-schema",

@@ -4,8 +4,6 @@ use serde::{Deserialize, Serialize};
 use cosmwasm_std::{Addr, Uint128};
 use cw_storage_plus::{Item, Map};
 
-use cw20::{Logo, MarketingInfoResponse};
-
 #[derive(Serialize, Deserialize, Clone, PartialEq, JsonSchema, Debug)]
 #[serde(rename_all = "snake_case")]
 pub struct TokenInfo {
@@ -29,7 +27,6 @@ impl TokenInfo {
 }
 
 pub const TOKEN_INFO: Item<TokenInfo> = Item::new("token_info");
-pub const MARKETING_INFO: Item<MarketingInfoResponse> = Item::new("marketing_info");
-pub const LOGO: Item<Logo> = Item::new("logo");
 pub const BALANCES: Map<&Addr, Uint128> = Map::new("balance");
 pub const STAKING_ADDR: Item<Addr> = Item::new("staking_addr");
+pub const DAO_ADDR: Item<Addr> = Item::new("DAO_addr");
