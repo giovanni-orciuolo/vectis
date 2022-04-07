@@ -42,6 +42,9 @@ pub enum WalletFactoryQueryMsg {
     Wallets {},
     ProxyCodeId {},
     MultisigCodeId {},
+    /// Returns the fee required to create a wallet
+    /// Fee goes to the DAO
+    Fee {},
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
@@ -61,7 +64,7 @@ pub enum WalletFactoryExecuteMsg {
         new_code_id: u64,
     },
     UpdateWalletFee {
-        new_fee: u128,
+        new_fee: Coin,
     },
 }
 
