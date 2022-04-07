@@ -32,7 +32,6 @@ fn create_new_proxy() {
         None,
         110,
     );
-    println!("rsp: {:?}", rsp);
     assert_matches!(rsp, Ok(_));
 
     let mut r = suite.query_wallet_addresses(&factory).unwrap();
