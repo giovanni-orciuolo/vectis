@@ -140,10 +140,9 @@ impl Suite {
         factory: Addr,
         initial_fund: Vec<Coin>,
         guardians_multisig: Option<MultiSig>,
-        coin_denom: &str,
         // This is both the initial proxy wallet initial balance
         // and the fee for wallet creation
-        native_tokens: u128,
+        native_tokens_amount: u128,
     ) -> Result<AppResponse> {
         let g1 = GUARD1.to_owned();
         let g2 = GUARD2.to_owned();
@@ -171,10 +170,7 @@ impl Suite {
                 user,
                 factory,
                 &execute,
-                &[Coin {
-                    denom: coin_denom.to_string(),
-                    amount: Uint128::new(native_tokens),
-                }],
+                &[coin(native_tokens_amount, "ucosm")],
             )
             .map_err(|err| anyhow!(err))
     }

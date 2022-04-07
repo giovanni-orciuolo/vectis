@@ -28,11 +28,11 @@ fn create_new_proxy() {
     let rsp = suite.create_new_proxy(
         Addr::unchecked("user"),
         factory.clone(),
-        vec![init_wallet_fund.clone()],
+        vec![coin(10, "ucosm"), coin(90, "ucosm")],
         None,
-        "ucosm",
         110,
     );
+    println!("rsp: {:?}", rsp);
     assert_matches!(rsp, Ok(_));
 
     let mut r = suite.query_wallet_addresses(&factory).unwrap();
@@ -74,7 +74,6 @@ fn cannot_create_new_proxy_without_payment() {
         factory.clone(),
         vec![init_wallet_fund.clone()],
         None,
-        "ucosm",
         0,
     );
     assert!(rsp.is_err());
@@ -96,7 +95,6 @@ fn user_can_execute_message() {
         factory.clone(),
         vec![init_wallet_fund.clone()],
         None,
-        "ucosm",
         110,
     );
     assert!(create_proxy_rsp.is_ok());
@@ -159,7 +157,6 @@ fn create_new_proxy_with_multisig_guardians() {
         factory.clone(),
         vec![init_wallet_fund.clone()],
         Some(multisig),
-        "ucosm",
         110,
     );
     assert_matches!(rsp, Ok(_));

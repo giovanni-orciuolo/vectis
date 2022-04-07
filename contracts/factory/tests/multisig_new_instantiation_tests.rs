@@ -30,7 +30,6 @@ fn user_can_update_proxy_multisig_with_direct_message() {
         factory.clone(),
         vec![init_proxy_fund.clone()],
         Some(multisig.clone()),
-        "ucosm",
         310,
     );
 
@@ -116,7 +115,6 @@ fn relayer_can_update_proxy_multisig_with_user_signature() {
         factory.clone(),
         vec![init_proxy_fund.clone()],
         Some(multisig.clone()),
-        "ucosm",
         310,
     );
 
